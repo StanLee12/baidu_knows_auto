@@ -10,6 +10,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time, json
 
+# 添加操作账号的cookie， 获取cookies需要通过Chrone浏览器上的 EditThisCookie 插件来进行完成
 def add_cookis():
   cookies_file = open('cookies2.json')
   cookies = json.loads(cookies_file.read())
@@ -20,6 +21,7 @@ def add_cookis():
       cookie['sameSite'] = 'Strict'
     driver.add_cookie(cookie)
 
+# 跳转至问题界面
 def to_questions_page():
   questions_li = driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/ul/li[2]')
   questions_li.click()
@@ -31,6 +33,7 @@ def is_element_exist(xpath):
     return False
   return True
 
+# 获取所有的抢单按钮，暂时没有调用
 def answer():
   order_titles = driver.find_elements(By.CLASS_NAME, 'order-item')
   for title in order_titles:
@@ -40,19 +43,13 @@ def answer():
     order_button = driver.find_element(By.CSS_SELECTOR, button_selector)
     print(order_button.get_property('className'))
 
-def is_element_exist(xpath):
-  try:
-    driver.find_element(By.XPATH, xpath)
-  except:
-    return False
-  return True
-
 def back_to_questions_page():
   questions_tab = driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[1]/ul/li[2]')
   questions_tab.click()
   time.sleep(3)
   click_refresh()
 
+# 处理进入到抢单成功之后的会话界面
 def handle_after_enter_contact():
   try:
     print('进入订单会话界面, 等待加载...')
@@ -122,6 +119,7 @@ def check_tab_3_is_selected():
     time.sleep(2)
     check_ant_modal()
 
+# 对问题列表的第一个问题进行抢单
 def answer_first():
   order_items = driver.find_elements(By.CLASS_NAME, 'order-item')
   first_item_id = order_items[0].get_property('id')
@@ -132,6 +130,7 @@ def answer_first():
   time.sleep(5)
   check_tab_3_is_selected()
 
+# 点击刷新按钮
 def click_refresh():
   refresh_btn = driver.find_element(By.XPATH, '//*[@id="root"]/div/div/div[3]/div/div[2]/div/span')
   refresh_btn.click()
@@ -158,13 +157,16 @@ def run():
     time.sleep(3)
     run()
 
-chrome_options = Options() 
+chrome_options = Options()
+# 设置不打开chrome浏览器的gui界面
 # chrome_options.add_argument('--headless')
-chrome_options.add_argument('--start-maximized')
+# 设置浏览器执行完脚本之后不自动关闭
 chrome_options.add_experimental_option("detach", True)
 
 driver = webdriver.Chrome(service = Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()), options=chrome_options)
+# 设置浏览器打开之后最大化窗口
 driver.maximize_window()
+# 设置selenium操作隐式等待时长
 driver.implicitly_wait(10)
 driver.get('https://zhidao.baidu.com/pages/consult/index/grabbing-orders?role=consultor')
 time.sleep(5)
